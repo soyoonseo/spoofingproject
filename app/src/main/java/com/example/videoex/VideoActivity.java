@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -61,7 +62,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void startVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra("android.intent.extra.durationLimit",20);
+        intent.putExtra("android.intent.extra.durationLimit",5);
         startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
     }
 
@@ -146,13 +147,40 @@ public class VideoActivity extends AppCompatActivity {
                             new OnSuccessListener<UploadTask.TaskSnapshot> () {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Query query;
                                     Toast.makeText(VideoActivity.this, "등록이 완료되었습니다.\n 승인을 기다려 주세요.",
                                             Toast.LENGTH_LONG).show();
+                                    String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                                    Log.e(TAG, "url : "+_url);
                                     // 비디오 정보 User database에 저장
-                                    VideoUpload videoUpload = new VideoUpload(taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
-                                    Log.e(TAG, "videoUpload: "+videoUpload);
+                                    //final VideoUpload videoUpload = new VideoUpload(_url);
+                                    //Log.e(TAG, "videoUpload: "+videoUpload);
                                     //
-                                    mDatabase.child(_phone).setValue(videoUpload);
+//                                    try {
+//                                         query = FirebaseDatabase.getInstance().getReference().child("UserList").orderByChild("phone").equalTo(_phone);
+//
+//                                    }catch (Exception e) {
+//                                        Toast.makeText(VideoActivity.this, e.getMessage(),
+//                                                Toast.LENGTH_LONG).show();
+//                                    }
+//                                    query.addListenerForSingleValueEvent(new ValueEventListener(){
+//                                        @Override
+//                                        public void onDataChange(DataSnapshot datasnapshot){
+////                                            mDatabase.child(_phone).setValue(videoUpload);
+//
+//                                            DatabaseReference hopperRef = mDatabase.child(_phone);
+//                                            Map<String, Object> hopperUpdates = new HashMap<>();
+//                                            hopperUpdates.put("url", videoUpload);
+//                                            hopperRef.updateChildren(hopperUpdates);
+//                                            //hopperRef.updateChildrenAsync(hopperUpdates);
+//
+//
+//                                        }
+//                                        @Override
+//                                        public void onCancelled(DatabaseError databaseError) {
+//                                        }
+//                                    });
+
 
 
                                 }

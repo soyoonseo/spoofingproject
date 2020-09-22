@@ -7,6 +7,8 @@ public class User implements Serializable {
     private String email;
     private String phone;
 
+    private String url;
+
     public User() {
     }
 
@@ -33,4 +35,23 @@ public class User implements Serializable {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl() {
+        this.url = url;
+    }
+
+
+//    @Exclude
+//    public Map<String, Object> toMap() {
+//        HashMap<String, Object> result = new HashMap<>();
+//        result.put("email", email);
+//        result.put("name", name);
+//        result.put("phone", phone);
+//        result.put("url", url);
+//        return result;
+//    }
 }
