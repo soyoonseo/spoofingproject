@@ -13,8 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -66,36 +70,6 @@ public class VideoActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
     }
 
-//    public void upload(View view) {
-//        if (videouri != null) {
-//            UploadTask uploadTask = videoref.putFile(videouri);
-//
-//            uploadTask.addOnFailureListener(new OnFailureListener () {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    Toast.makeText(VideoActivity.this,
-//                            "Upload failed: " + e.getLocalizedMessage(),
-//                            Toast.LENGTH_LONG).show();
-//
-//                }
-//            }).addOnSuccessListener(
-//                    new OnSuccessListener<UploadTask.TaskSnapshot> () {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                            Toast.makeText(VideoActivity.this, "Upload complete",
-//                                    Toast.LENGTH_LONG).show();
-//                        }
-//                    }).addOnProgressListener (new OnProgressListener<UploadTask.TaskSnapshot> () {
-//                @Override
-//                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-//                    updateProgress(snapshot);
-//                }
-//            });        } else {
-//            Toast.makeText(VideoActivity.this, "Nothing to upload",
-//                    Toast.LENGTH_LONG).show();
-//        }
-//    }
-
     public void updateProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
         @SuppressWarnings("VisibleForTests") long fileSize =
@@ -110,11 +84,6 @@ public class VideoActivity extends AppCompatActivity {
         progressBar.setProgress((int) progress);
     }
 
-//    public void record(View view) {
-//        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-//        startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
-//    }
-
 
     @Override
     protected void onActivityResult(int requestCode,
@@ -123,8 +92,7 @@ public class VideoActivity extends AppCompatActivity {
 
         videouri = data.getData ();
         Log.e(TAG,"videoUri:"+videouri);
-        //회원별 파일 저장
-//        String userUid = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+
         filename = videouri.getLastPathSegment();
         if (requestCode == REQUEST_CODE) {
 
@@ -147,11 +115,41 @@ public class VideoActivity extends AppCompatActivity {
                             new OnSuccessListener<UploadTask.TaskSnapshot> () {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    Query query;
+//                                    Query query;
                                     Toast.makeText(VideoActivity.this, "등록이 완료되었습니다.\n 승인을 기다려 주세요.",
                                             Toast.LENGTH_LONG).show();
-                                    String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                                    final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
                                     Log.e(TAG, "url : "+_url);
+
+
+                                    //check the leaders and their scores, get the score of the current user
+                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
+                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
+                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot) {
+                                            if(snapshot.exists()){
+                                                System.out.println("************************여기 왔다");
+                                                for (DataSnapshot child: snapshot.getChildren()) {
+
+                                                    //get the key of the child node that has to be updated
+                                                    String postkey = child.getRef().getKey();
+
+                                                    //update score
+                                                    String url = _url;
+                                                    leadersRef.child(postkey).child("url").setValue(url);
+                                                    Toast.makeText(VideoActivity.this,"url입력 성공",Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+
                                     // 비디오 정보 User database에 저장
                                     //final VideoUpload videoUpload = new VideoUpload(_url);
                                     //Log.e(TAG, "videoUpload: "+videoUpload);
