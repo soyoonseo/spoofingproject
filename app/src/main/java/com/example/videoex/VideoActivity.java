@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -21,10 +23,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VideoActivity extends AppCompatActivity {
+    private static final String TAG = "TAG";
     private Uri videouri;
     private static final int REQUEST_CODE = 101;
     private StorageReference videoref;
     private String filename;
+    private String _phone;
+
+
+    private DatabaseReference mDatabase; // 네트워크 연결
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +39,30 @@ public class VideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-//        videoref =storageRef.child("/videos" + "/userIntro.3gp"); // child() 메서드를 사용하여 트리에서 하위 위치를 가리키는 참조를 만든다.
 
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra("android.intent.extra.durationLimit",20);
-        startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+        Intent signUp_intent = getIntent();
+        _phone = signUp_intent.getStringExtra("phone");
+        //비디오 화면 띄워주
+        startVideo();
+        //이름 네이밍
+        create_Video_Name(storageRef);
 
+
+
+    }
+
+    private void create_Video_Name(StorageReference storageRef ) {
         // 파일명 : 현재 시간 + 회원전화번호
         SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
         Date time = new Date();
         String time1 = format1.format(time);
-        videoref =storageRef.child("/videos/" + time1 + filename);
+        videoref =storageRef.child("/videos/" + time1 + _phone);
+    }
+
+    private void startVideo() {
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra("android.intent.extra.durationLimit",20);
+        startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
     }
 
 //    public void upload(View view) {
@@ -101,10 +121,12 @@ public class VideoActivity extends AppCompatActivity {
         super.onActivityResult (requestCode, resultCode, data);
 
         videouri = data.getData ();
+        Log.e(TAG,"videoUri:"+videouri);
         //회원별 파일 저장
 //        String userUid = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
         filename = videouri.getLastPathSegment();
         if (requestCode == REQUEST_CODE) {
+
             if (resultCode == RESULT_OK) {
                 Toast.makeText (this, "Video saved to:\n" +
                         videouri, Toast.LENGTH_LONG).show ();
@@ -126,6 +148,13 @@ public class VideoActivity extends AppCompatActivity {
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     Toast.makeText(VideoActivity.this, "등록이 완료되었습니다.\n 승인을 기다려 주세요.",
                                             Toast.LENGTH_LONG).show();
+                                    // 비디오 정보 User database에 저장
+                                    VideoUpload videoUpload = new VideoUpload(taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+                                    Log.e(TAG, "videoUpload: "+videoUpload);
+                                    //
+                                    mDatabase.child(_phone).setValue(videoUpload);
+
+
                                 }
                             }).addOnProgressListener (new OnProgressListener<UploadTask.TaskSnapshot> () {
                         @Override

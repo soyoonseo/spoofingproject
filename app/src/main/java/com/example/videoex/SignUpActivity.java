@@ -88,7 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 mDatabase.child(phone).setValue(user);  // 유저 휴대시폰 번호으로 UserList 하위 경로 생성 정보 저장
                                 startToast("등록이 완료되었습니다.");
 
-                                startVideoActivity();
+                                startVideoActivity(phone);
                             }
                         }
                     }
@@ -145,8 +145,10 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    private void startVideoActivity() {
+    private void startVideoActivity(String phone) {
+        //인텐트 객체 생성
         Intent intent = new Intent(this, VideoActivity.class);
+        intent.putExtra("phone",phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
         startActivity(intent);
     }
 
