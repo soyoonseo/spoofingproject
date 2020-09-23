@@ -6,8 +6,8 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String phone;
+    private String approval;
 
-    private String url;
 
     public User() {
     }
@@ -36,22 +36,11 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getUrl() {
-        return url;
+    public String getApproval() {
+        return approval;
     }
 
-    public void setUrl() {
-        this.url = url;
+    public void setApproval(String approval) {
+        this.approval = approval;
     }
-
-
-//    @Exclude
-//    public Map<String, Object> toMap() {
-//        HashMap<String, Object> result = new HashMap<>();
-//        result.put("email", email);
-//        result.put("name", name);
-//        result.put("phone", phone);
-//        result.put("url", url);
-//        return result;
-//    }
 }

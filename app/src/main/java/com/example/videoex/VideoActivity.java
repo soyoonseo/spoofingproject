@@ -13,12 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -101,7 +96,9 @@ public class VideoActivity extends AppCompatActivity {
                         videouri, Toast.LENGTH_LONG).show ();
                 // upload 메소드
                 if (videouri != null) {
+
                     UploadTask uploadTask = videoref.putFile(videouri);
+
 
                     uploadTask.addOnFailureListener(new OnFailureListener () {
                         @Override
@@ -115,70 +112,36 @@ public class VideoActivity extends AppCompatActivity {
                             new OnSuccessListener<UploadTask.TaskSnapshot> () {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                    Query query;
+
+
                                     Toast.makeText(VideoActivity.this, "등록이 완료되었습니다.\n 승인을 기다려 주세요.",
                                             Toast.LENGTH_LONG).show();
-                                    final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                                    Log.e(TAG, "url : "+_url);
-
-
-                                    //check the leaders and their scores, get the score of the current user
-                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
-                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
-                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot snapshot) {
-                                            if(snapshot.exists()){
-                                                System.out.println("************************여기 왔다");
-                                                for (DataSnapshot child: snapshot.getChildren()) {
-
-                                                    //get the key of the child node that has to be updated
-                                                    String postkey = child.getRef().getKey();
-
-                                                    //update score
-                                                    String url = _url;
-                                                    leadersRef.child(postkey).child("url").setValue(url);
-                                                    Toast.makeText(VideoActivity.this,"url입력 성공",Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-
-                                    // 비디오 정보 User database에 저장
-                                    //final VideoUpload videoUpload = new VideoUpload(_url);
-                                    //Log.e(TAG, "videoUpload: "+videoUpload);
-                                    //
-//                                    try {
-//                                         query = FirebaseDatabase.getInstance().getReference().child("UserList").orderByChild("phone").equalTo(_phone);
-//
-//                                    }catch (Exception e) {
-//                                        Toast.makeText(VideoActivity.this, e.getMessage(),
-//                                                Toast.LENGTH_LONG).show();
-//                                    }
-//                                    query.addListenerForSingleValueEvent(new ValueEventListener(){
+//                                    final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+//                                    Log.e(TAG, "url : "+_url);
+//                                    //데이터베이스에 url 주소 추가
+//                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
+//                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
+//                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
 //                                        @Override
-//                                        public void onDataChange(DataSnapshot datasnapshot){
-////                                            mDatabase.child(_phone).setValue(videoUpload);
-//
-//                                            DatabaseReference hopperRef = mDatabase.child(_phone);
-//                                            Map<String, Object> hopperUpdates = new HashMap<>();
-//                                            hopperUpdates.put("url", videoUpload);
-//                                            hopperRef.updateChildren(hopperUpdates);
-//                                            //hopperRef.updateChildrenAsync(hopperUpdates);
-//
-//
+//                                        public void onDataChange(DataSnapshot snapshot) {
+//                                            if(snapshot.exists()){
+//                                                for (DataSnapshot child: snapshot.getChildren()) {
+//                                                    //get the key of the child node that has to be updated
+//                                                    String postkey = child.getRef().getKey();
+//                                                    // 확인해보
+//                                                    Log.d(TAG, "postkey: "+postkey);
+//                                                    //url update
+//                                                    String url = _url;
+//                                                    leadersRef.child(postkey).child("url").setValue(url);
+//                                                }
+//                                            }
 //                                        }
+//
 //                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
 //                                        }
 //                                    });
-
 
 
                                 }

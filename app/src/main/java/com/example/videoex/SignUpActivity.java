@@ -84,7 +84,8 @@ public class SignUpActivity extends AppCompatActivity {
                                 user.setName(name);
                                 user.setEmail(email);
                                 user.setPhone(phone);
-//                                user.setUrl();
+                                user.setApproval("F");
+
 
                                 mDatabase.child(phone).setValue(user);  // 유저 휴대시폰 번호으로 UserList 하위 경로 생성 정보 저장
                                 startToast("등록이 완료되었습니다.");
