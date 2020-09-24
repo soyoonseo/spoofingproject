@@ -35,7 +35,7 @@ public class notloginMainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        System.exit(1); // 그냥 시스템 꺼버
+        System.exit(1); // 그냥 시스템 꺼버림
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener(){
@@ -46,12 +46,11 @@ public class notloginMainActivity extends AppCompatActivity {
                     startSignUpActivity();
                     break;
                 case R.id.gotoLoginButton:
-//                    myStartActivity(LoginActivity.class);
+//                    myStartActivity(LoginActivity.class); // 로그인 화면
                     break;
             }
         }
     };
-
 
     //리스너에서 토스트가 안되가지고 함수로 만들어줌
     private void startToast(String msg){
@@ -67,6 +66,4 @@ public class notloginMainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
     }
-
-
 }

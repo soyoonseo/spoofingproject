@@ -7,7 +7,7 @@ public class User implements Serializable {
     private String email;
     private String phone;
     private String approval;
-
+    private String registerDate;
 
     public User() {
     }
@@ -36,11 +36,11 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getApproval() {
-        return approval;
-    }
+    public String getApproval() { return approval; }
 
-    public void setApproval(String approval) {
-        this.approval = approval;
-    }
+    public void setApproval(String approval) { this.approval = approval; }
+
+    public String getRegisterDate() { return registerDate; }
+
+    public void setRegisterDate(String registerDate) { this.registerDate = registerDate; }
 }

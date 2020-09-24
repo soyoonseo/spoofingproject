@@ -13,14 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class VideoActivity extends AppCompatActivity {
     private static final String TAG = "TAG";
@@ -29,8 +31,6 @@ public class VideoActivity extends AppCompatActivity {
     private StorageReference videoref;
     private String filename;
     private String _phone;
-
-
     private DatabaseReference mDatabase; // 네트워크 연결
 
     @Override
@@ -42,25 +42,27 @@ public class VideoActivity extends AppCompatActivity {
 
         Intent signUp_intent = getIntent();
         _phone = signUp_intent.getStringExtra("phone");
-        //비디오 화면 띄워주
+        //비디오 화면 띄워주기
         startVideo();
         //이름 네이밍
         create_Video_Name(storageRef);
 
-
-
     }
 
     private void create_Video_Name(StorageReference storageRef ) {
-        // 파일명 : 현재 시간 + 회원전화번호
-        SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
-        Date time = new Date();
-        String time1 = format1.format(time);
-        videoref =storageRef.child("/videos/" + time1 + _phone);
+//        // 파일명 : 현재 시간 + 회원전화번호
+//        SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+//        Date time = new Date();
+//        String time1 = format1.format(time);
+//        videoref =storageRef.child("/videos/" + time1 + _phone);
+
+        // 파일명 : 회원전화번호
+        videoref =storageRef.child("/videos/" + _phone);
     }
 
     private void startVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
         intent.putExtra("android.intent.extra.durationLimit",5);
         startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
     }
@@ -86,63 +88,60 @@ public class VideoActivity extends AppCompatActivity {
         super.onActivityResult (requestCode, resultCode, data);
 
         videouri = data.getData ();
-        Log.e(TAG,"videoUri:"+videouri);
-
+//        Log.e(TAG,"videoUri:"+videouri);
         filename = videouri.getLastPathSegment();
         if (requestCode == REQUEST_CODE) {
-
             if (resultCode == RESULT_OK) {
-                Toast.makeText (this, "Video saved to:\n" +
-                        videouri, Toast.LENGTH_LONG).show ();
-                // upload 메소드
+//                Toast.makeText (this, "Video saved to:\n" +
+//                        videouri, Toast.LENGTH_LONG).show ();
+                // upload 메소드. 저장 -> 업로드
                 if (videouri != null) {
 
-                    UploadTask uploadTask = videoref.putFile(videouri);
-
+                    UploadTask uploadTask = videoref.putFile(videouri); // videoref 저장 경로에 비디오 저장
 
                     uploadTask.addOnFailureListener(new OnFailureListener () {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            // Upload failed
                             Toast.makeText(VideoActivity.this,
-                                    "Upload failed: " + e.getLocalizedMessage(),
+                                    "업로드에 실패했습니다.\n다시 시도해 주세요.: " + e.getLocalizedMessage(),
                                     Toast.LENGTH_LONG).show();
-
                         }
                     }).addOnSuccessListener(
                             new OnSuccessListener<UploadTask.TaskSnapshot> () {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-
                                     Toast.makeText(VideoActivity.this, "등록이 완료되었습니다.\n 승인을 기다려 주세요.",
                                             Toast.LENGTH_LONG).show();
-//                                    final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-//                                    Log.e(TAG, "url : "+_url);
-//                                    //데이터베이스에 url 주소 추가
-//                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
-//                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
-//                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot snapshot) {
-//                                            if(snapshot.exists()){
-//                                                for (DataSnapshot child: snapshot.getChildren()) {
-//                                                    //get the key of the child node that has to be updated
-//                                                    String postkey = child.getRef().getKey();
-//                                                    // 확인해보
-//                                                    Log.d(TAG, "postkey: "+postkey);
-//                                                    //url update
-//                                                    String url = _url;
-//                                                    leadersRef.child(postkey).child("url").setValue(url);
-//                                                }
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
 
+                                    //데이터베이스에 저장된 동영상 url추가
+                                    final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+//                                    Log.e(TAG, "url : "+_url);
+                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
+                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
+                                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot) {
+                                            if(snapshot.exists()){
+                                                for (DataSnapshot child: snapshot.getChildren()) {
+                                                    //get the key of the child node that has to be updated
+                                                    String postkey = child.getRef().getKey();
+                                                    // 확인해보기
+                                                    Log.d(TAG, "postkey: "+postkey);
+                                                    //url update
+                                                    String url = _url;
+                                                    leadersRef.child(postkey).child("url").setValue(url);
+                                                }
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                    startMypagectivity(_phone); // MyPage로 이동
 
                                 }
                             }).addOnProgressListener (new OnProgressListener<UploadTask.TaskSnapshot> () {
@@ -151,18 +150,32 @@ public class VideoActivity extends AppCompatActivity {
                             updateProgress(snapshot);
                         }
                     });        } else {
-                    Toast.makeText(VideoActivity.this, "Nothing to upload",
+                    // Nothing to upload
+                    Toast.makeText(VideoActivity.this, "업로드할 영상이 없습니다.\n다시 시도해 주세요.",
                             Toast.LENGTH_LONG).show();
                 }
 
-
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText (this, "Video recording cancelled.",
+                // Video recording cancelled.
+                Toast.makeText (this, "촬영이 취소되었습니다.",
                         Toast.LENGTH_LONG).show ();
             } else {
-                Toast.makeText (this, "Failed to record video",
+                // Failed to record video
+                Toast.makeText (this, "촬영에 실패했습니다.\n다시 시도해 주세요.",
                         Toast.LENGTH_LONG).show ();
             }
         }
+    }
+
+    //리스너에서 토스트가 안되가지고 함수로 만들어줌
+    private void startToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void startMypagectivity(String phone) {
+        //인텐트 객체 생성
+        Intent intent = new Intent(this, MyPageActivity.class);
+        intent.putExtra("phone",_phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
+        startActivity(intent);
     }
 }

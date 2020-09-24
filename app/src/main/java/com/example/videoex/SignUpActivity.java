@@ -18,6 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
@@ -76,21 +79,23 @@ public class SignUpActivity extends AppCompatActivity {
                         boolean phoneIsExist = datasnapshot.exists();
                         System.out.print(phoneIsExist);
                         if(phoneIsExist){
-                            Toast.makeText(getApplicationContext(), "이미 가입된 휴대폰 번입니다\n다 확인해 주세요.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "이미 가입된 휴대폰 번입니다\n다시 확인해 주세요.",Toast.LENGTH_SHORT).show();
                         }
                         else {
                             if (name.length() > 0 && email.length() > 0 && phone.length() > 0) {
+                                SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+                                Date time = new Date();
+                                String time1 = format1.format(time);
 
                                 user.setName(name);
                                 user.setEmail(email);
                                 user.setPhone(phone);
-                                user.setApproval("F");
-
+                                user.setApproval("F"); // 회원에게 있어서는 승인여부 관리자 입장에서는 학습여부 디폴트 값 F -> 승인 시 T 로 변경
+                                user.setRegisterDate(time1);
 
                                 mDatabase.child(phone).setValue(user);  // 유저 휴대시폰 번호으로 UserList 하위 경로 생성 정보 저장
-                                startToast("등록이 완료되었습니다.");
-
-                                startVideoActivity(phone);
+//                                startToast("DB등록이 완료되었습니다.");
+                                startVideoActivity(phone); // VideoActivity로 이동 (비디오 촬영)
                             }
                         }
                     }
@@ -101,51 +106,12 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
 
-//        // email 중복체크
-//        if (email.length() > 0){
-//            Query query = FirebaseDatabase.getInstance().getReference().child("UserList").orderByChild("email").equalTo(email);
-//            query.addListenerForSingleValueEvent(new ValueEventListener(){
-//                @Override
-//                public void onDataChange(DataSnapshot datasnapshot){
-//                    boolean eamilIsExist = datasnapshot.exists();
-//                    System.out.print(eamilIsExist);
-//                    if(eamilIsExist){
-//                        Toast.makeText(getApplicationContext(), "이미 존재하는 이메일입니다\n이메일을 확인해 주세요.",Toast.LENGTH_SHORT).show();
-//                    }
-//                    else {
-//                        if (name.length() > 0 && email.length() > 0 && phone.length() > 0) {
-//
-//                            user.setName(name);
-//                            user.setEmail(email);
-//                            user.setPhone(phone);
-//
-//                            mDatabase.child(phone).setValue(user);  // 유저 휴대폰 번호으로 UserList 하위 경로 생성 정보 저장
-//                            startToast("등록이 완료되었습니다.");
-//
-//                            startVideoActivity();
-//                        }
-//                    }
-//                }
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//                }
-//            });
-//        }
-
     }
-
-//    private void updateUI(FirebaseUser user) {
-//        String keyid = mDatabase.push().getKey();
-//        mDatabase.child(keyid).setValue(user); //adding user info to database
-//        Intent loginIntent = new Intent(this, notloginMainActivity.class);
-//        startActivity(loginIntent);
-//    }
 
     //리스너에서 토스트가 안되가지고 함수로 만들어줌
     private void startToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
-
 
     private void startVideoActivity(String phone) {
         //인텐트 객체 생성
@@ -153,6 +119,5 @@ public class SignUpActivity extends AppCompatActivity {
         intent.putExtra("phone",phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
         startActivity(intent);
     }
-
 
 }

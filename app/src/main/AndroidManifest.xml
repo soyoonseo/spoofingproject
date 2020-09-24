@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".VideoActivity">
         </activity>
+        <activity android:name=".MyPageActivity">
+        </activity>
     </application>
 
 </manifest>
