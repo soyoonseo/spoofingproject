@@ -1,146 +1,77 @@
 package com.example.videoex;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.MediaController;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.VideoView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.example.videoex.faceDetect.FaceDetection;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    private static final int PICK_VIDEO_REQUEST = 1;
-
-
-    private Button choosebtn;
-    private Button uploadbtn;
-    private   ProgressBar progressBar;
-    private VideoView videoView;
-    private EditText videoname;
-    private Uri videoUri;
-    MediaController mediaController;
-    private StorageReference mStorageRef;
-    private DatabaseReference mDataBaseRef;
-
-
-
-
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //초기화
+        mAuth = FirebaseAuth.getInstance();
 
-        choosebtn = findViewById(R.id.choose_btn);
-        uploadbtn = findViewById(R.id.upload_btn);
-        videoView = findViewById(R.id.video_view);
-        progressBar = findViewById(R.id.progress_bar);
-        videoname = findViewById(R.id.video_name);
-
-        mediaController = new MediaController (this);
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("videos");
-        mDataBaseRef = FirebaseDatabase.getInstance().getReference("videos");
-
-        videoView.setMediaController(mediaController);
-        mediaController.setAnchorView(videoView);
-        videoView.start();
-
-
-        choosebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ChooseVideo();
-            }
-        });
-
-        uploadbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UploadVideo();
-            }
-        });
+        findViewById(R.id.gotoLoginButton).setOnClickListener(onClickListener);
+        findViewById(R.id.gotoSignUpButton).setOnClickListener(onClickListener);
     }
 
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//    }
 
-    private  void ChooseVideo(){
-        Intent intent = new Intent();
-        intent.setType("video/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_VIDEO_REQUEST);
-    }
+    // 뒤로 가기가 필요없으니까음(여기가 메인이기 때문에) 만들어줌
+    //***********우리 프로젝트에서는 메인에서 이 기능을 쓰면 좋을 것 같음
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_VIDEO_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-
-            videoUri = data.getData();
-
-            videoView.setVideoURI(videoUri);
-
-
-        }}
-
-    private String getFileExtension(Uri videoUri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(videoUri));
+    public void onBackPressed() {
+        super.onBackPressed();
+        System.exit(1); // 그냥 시스템 꺼버림
     }
 
-    private void UploadVideo() {
-
-        progressBar.setVisibility(View.VISIBLE);
-        if (videoUri != null){
-            StorageReference reference = mStorageRef.child(System.currentTimeMillis() +
-                    "." +getFileExtension(videoUri));
-
-            reference.putFile(videoUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
-                            Member member = new Member(videoname.getText().toString().trim(),
-                                    taskSnapshot.getUploadSessionUri().toString());
-                            String UploadId = mDataBaseRef.push().getKey();
-                            mDataBaseRef.child(UploadId).setValue(member);
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-        }else {
-            Toast.makeText(getApplicationContext(),"No file selected",Toast.LENGTH_SHORT).show();
+    View.OnClickListener onClickListener = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.gotoSignUpButton:
+                    startSignUpActivity();
+                    break;
+                case R.id.gotoLoginButton:
+//                    myStartActivity(LoginActivity.class); // 로그인 화면
+                    startLigInactivity();
+                    break;
+            }
         }
+    };
 
 
-    }}
+
+    //리스너에서 토스트가 안되가지고 함수로 만들어줌
+    private void startToast(String msg){
+        Toast.makeText(this, msg,Toast.LENGTH_SHORT).show();
+    }
+    //리스너에서 intent 사용이 안되가지고 함수로 만들어줌
+    private void myStartActivity(Class c) {
+        Intent intent = new Intent(this, c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // 로그인 하고 메인 화면에서 뒤로가기 누르면 앱 종료
+        startActivity(intent);
+    }
+    private void startSignUpActivity() {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
+    private void startLigInactivity() {
+        Intent intent = new Intent(this, FaceDetection.class);
+        startActivity(intent);
+    }
+}

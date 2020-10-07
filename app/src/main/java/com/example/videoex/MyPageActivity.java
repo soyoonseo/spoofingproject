@@ -65,4 +65,3 @@ public class MyPageActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.mypage_approval)).setText(myapproval);
     }
 }
-저
