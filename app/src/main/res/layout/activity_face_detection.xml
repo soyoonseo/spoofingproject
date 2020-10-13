@@ -22,7 +22,6 @@
         app:layout_constraintVertical_bias="1.0">
 
 
-
         <com.example.videoex.faceDetect.utils.common.GraphicOverlay
             android:id="@+id/fireFaceOverlay"
             android:layout_width="match_parent"
@@ -43,6 +42,20 @@
 
 
     </com.example.videoex.faceDetect.utils.common.CameraSourcePreview>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

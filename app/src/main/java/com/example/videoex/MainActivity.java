@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.gotoLoginButton).setOnClickListener(onClickListener);
         findViewById(R.id.gotoSignUpButton).setOnClickListener(onClickListener);
+        //OTP테스트
+        findViewById(R.id.gotoOTPButton).setOnClickListener(onClickListener);
     }
 
 //    @Override
@@ -50,10 +52,18 @@ public class MainActivity extends AppCompatActivity {
 //                    myStartActivity(LoginActivity.class); // 로그인 화면
                     startLigInactivity();
                     break;
+                case R.id.gotoOTPButton:
+                    startOTPActivity();
+                    break;
             }
         }
     };
 
+    //OTP 테스트
+    private void startOTPActivity() {
+        Intent intent = new Intent(this, SendOTPActivity.class);
+        startActivity(intent);
+    }
 
 
     //리스너에서 토스트가 안되가지고 함수로 만들어줌

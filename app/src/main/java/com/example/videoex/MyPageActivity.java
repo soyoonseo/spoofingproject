@@ -46,6 +46,12 @@ public class MyPageActivity extends AppCompatActivity {
                     myPhoneNum = myUser.getPhone();
                     myapproval = myUser.getApproval();
 
+                    if (myapproval.equals("F")){
+                        myapproval = "승인 전";
+                    } else {
+                        myapproval = "승인 완료";
+                    }
+
                     set_view();
 
                 }
