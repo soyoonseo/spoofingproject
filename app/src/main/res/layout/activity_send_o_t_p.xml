@@ -73,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:background="@null"
-                android:hint="12345678"
+                android:hint="01012345678"
                 android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:inputType="number"
