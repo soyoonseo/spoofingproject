@@ -1,5 +1,4 @@
 package com.example.videoex;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,8 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity2 extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference mDatabase; // 네트워크 연결
@@ -32,7 +30,6 @@ public class SignUpActivity extends AppCompatActivity {
     public int TERMS_AGREE_1 = 0; // No Check = 0, Check = 1
     public int TERMS_AGREE_2 = 0; // No Check = 0, Check = 1
     public int TERMS_AGREE_3 = 0; // No Check = 0, Check = 1
-
     // 체크박스
     AppCompatCheckBox check1; // 첫번쨰 동의
     AppCompatCheckBox check2; // 두번쨰 동의
@@ -42,11 +39,67 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-
         //초기화
         mAuth = FirebaseAuth.getInstance();
-
         findViewById(R.id.signUpButton).setOnClickListener(onClickListener);
+        findViewById(R.id.terms1).setOnClickListener(onClickListener);
+        findViewById(R.id.terms2).setOnClickListener(onClickListener);
+        check1 = (AppCompatCheckBox)findViewById(R.id.check1);
+        check2 = (AppCompatCheckBox)findViewById(R.id.check1);
+        check3 = (AppCompatCheckBox)findViewById(R.id.check1);
+        // 초항동의
+        check1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    TERMS_AGREE_1 = 1;
+                } else {
+                    TERMS_AGREE_1 = 0;
+                }
+            }
+        });
+        // 2항동의
+        check2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    TERMS_AGREE_2 = 1;
+                } else {
+                    TERMS_AGREE_2 = 0;
+                }
+            }
+        });
+        // 전체동의
+        check3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    check1.setChecked(true);
+                    check2.setChecked(true);
+                    TERMS_AGREE_3 = 1;
+                } else {
+                    check1.setChecked(false);
+                    check2.setChecked(false);
+                    TERMS_AGREE_3 = 0;
+                }
+            }
+        });
+
+        // 전체 약관 체크여부
+        if (TERMS_AGREE_3 != 1) {
+            // 첫번째 약관 체크여부
+            if (TERMS_AGREE_2 == 1) {
+                // 두번쨰 약관 체크 여부
+                if (TERMS_AGREE_1 == 1) {
+                } else {
+                    Toast.makeText(getApplicationContext(), "약관을 체크해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "약관을 체크해주세요", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -56,10 +109,10 @@ public class SignUpActivity extends AppCompatActivity {
                 case R.id.signUpButton:
                     signUp();
                     break;
+
             }
         }
     };
-
     private void signUp() {
         final String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
         final String email = ((EditText) findViewById(R.id.emailEditText)).getText().toString();
@@ -67,11 +120,9 @@ public class SignUpActivity extends AppCompatActivity {
         if (phone.startsWith("0")) {
             phone = phone.substring(1);
         }
-
         //User 클래스를 이용하여 빈 객체 만든다
         final User user = new User();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("UserList"); //userList 라는 키를 가진 값들을 참조한다.
-
         if (TextUtils.isEmpty(name)) {
             startToast("이름을 입력해주세요");
         } else if (TextUtils.isEmpty(email)) {
@@ -79,67 +130,6 @@ public class SignUpActivity extends AppCompatActivity {
         } else if (TextUtils.isEmpty(phone)) {
             startToast("휴대폰 번호를 입력해주세요");
         }
-
-        // 초항동의
-        check1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    TERMS_AGREE_1 = 1;
-                } else {
-
-                    TERMS_AGREE_1 = 0;
-                }
-            }
-        });
-        // 2항동의
-        check2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    TERMS_AGREE_2 = 1;
-                } else {
-
-                    TERMS_AGREE_2 = 0;
-                }
-            }
-        });
-        // 전체동의
-        check3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    TERMS_AGREE_3 = 1;
-                } else {
-
-                    TERMS_AGREE_3 = 0;
-                }
-            }
-        });
-        // 전체 약관 체크여부
-        if (TERMS_AGREE_3 != 1) {
-            // 첫번째 약관 체크여부
-            if (TERMS_AGREE_2 == 1) {
-                // 두번쨰 약관 체크 여부
-                if (TERMS_AGREE_1 == 1) {
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "약관을 체크해주세요", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-            } else {
-                Toast.makeText(getApplicationContext(), "약관을 체크해주세요", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-//        // 전체 약관 체크된경우
-//        else {
-//        }
-
         // 휴대폰 번호 정규식 검사 & 중복 검사
         String regExp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$";
         if(phone.matches(regExp) == false){
@@ -169,7 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                             user.setPhone(finalPhone);
                             user.setApproval("F"); // 회원에게 있어서는 승인여부 관리자 입장에서는 학습여부 디폴트 값 F -> 승인 시 T 로 변경
                             user.setRegisterDate(time1);
-                            user.setStatus("Register");
+//                            user.setState("Register");
                             mDatabase.child(finalPhone).setValue(user);  // 유저 휴대시폰 번호으로 UserList 하위 경로 생성 정보 저장
                             startVideoActivity(finalPhone); // VideoActivity로 이동 (비디오 촬영)
                         }
@@ -181,18 +171,14 @@ public class SignUpActivity extends AppCompatActivity {
             });
         }
     }
-
-
     //리스너에서 토스트가 안되가지고 함수로 만들어줌
     private void startToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
-
-    private void startVideoActivity(String finalPhone) {
+    private void startVideoActivity(String phone) {
         //인텐트 객체 생성
         Intent intent = new Intent(this, NoticeActivity.class);
-        intent.putExtra("phone",finalPhone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
+        intent.putExtra("phone",phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
         startActivity(intent);
     }
-
 }

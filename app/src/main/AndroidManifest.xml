@@ -14,14 +14,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".VerifyOTPActivity"
+        <activity
+            android:name=".VerifyOTPActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            />
-        <activity android:name=".SendOTPActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".SendOTPActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            />
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +30,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".NoticeActivity" />
+        <activity android:name=".SignUpActivity2" />
+        <activity android:name=".LoginActivity" />
         <activity android:name=".VideoActivity" />
         <activity android:name=".MyPageActivity" />
+        <activity android:name=".TermsActivity1" />
+        <activity android:name=".TermsActivity2" />
         <activity
             android:name=".faceDetect.FaceDetection"
             android:screenOrientation="portrait" />
@@ -39,7 +44,6 @@
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="face" />
-
     </application>
 
 </manifest>

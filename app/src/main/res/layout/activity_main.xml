@@ -42,6 +42,12 @@
                 android:layout_height="wrap_content"
                 android:text="OTP테스트" />
 
+            <Button
+                android:id="@+id/gotoVideoButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="비디오테스트" />
+
         </LinearLayout>
 
     </LinearLayout>

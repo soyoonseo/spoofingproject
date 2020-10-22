@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +26,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import java.util.concurrent.TimeUnit;
 
 public class VerifyOTPActivity extends AppCompatActivity {
-
+    private static final String TAG = "TAG";
     private EditText inputCode1, inputCode2, inputCode3, inputCode4, inputCode5, inputCode6;
     private String verificationId;
 
@@ -89,9 +90,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     progressBar.setVisibility(View.GONE);
                                     buttonVerify.setVisibility(View.VISIBLE);
                                     if(task.isSuccessful()){
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                        String phoneNumber = getIntent().getStringExtra("mobile");
+                                        phoneNumber = "+82"+phoneNumber.substring(1);
+                                        intent.putExtra("phoneNumber",phoneNumber);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
+
                                     }
                                     else{
                                         Toast.makeText(VerifyOTPActivity.this, "인증번호가 일치하지 않습니다.",Toast.LENGTH_SHORT).show();

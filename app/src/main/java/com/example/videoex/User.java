@@ -8,6 +8,7 @@ public class User implements Serializable {
     private String phone;
     private String approval;
     private String registerDate;
+    private String status;
 
     public User() {
     }
@@ -43,4 +44,10 @@ public class User implements Serializable {
     public String getRegisterDate() { return registerDate; }
 
     public void setRegisterDate(String registerDate) { this.registerDate = registerDate; }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.videoex;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -11,6 +12,7 @@ import com.example.videoex.faceDetect.FaceDetection;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "TAG";
     private FirebaseAuth mAuth;
 
     @Override
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.gotoSignUpButton).setOnClickListener(onClickListener);
         //OTP테스트
         findViewById(R.id.gotoOTPButton).setOnClickListener(onClickListener);
+        //비디오테스트
+        findViewById(R.id.gotoVideoButton).setOnClickListener(onClickListener);
     }
 
 //    @Override
@@ -55,17 +59,26 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.gotoOTPButton:
                     startOTPActivity();
                     break;
+                case R.id.gotoVideoButton:
+                    startVideoActivity();
+                    break;
             }
         }
     };
+
+    //video테스트
+    private void startVideoActivity() {
+        Intent intent = new Intent(this, VideoActivity.class);
+        startActivity(intent);
+        Log.e(TAG, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd");
+    }
+
 
     //OTP 테스트
     private void startOTPActivity() {
         Intent intent = new Intent(this, SendOTPActivity.class);
         startActivity(intent);
     }
-
-
     //리스너에서 토스트가 안되가지고 함수로 만들어줌
     private void startToast(String msg){
         Toast.makeText(this, msg,Toast.LENGTH_SHORT).show();
@@ -77,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void startSignUpActivity() {
-        Intent intent = new Intent(this, SignUpActivity.class);
+        Intent intent = new Intent(this, SignUpActivity2.class);
         startActivity(intent);
     }
     private void startLigInactivity() {

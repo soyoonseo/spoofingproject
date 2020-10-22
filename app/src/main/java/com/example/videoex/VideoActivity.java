@@ -50,14 +50,8 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void create_Video_Name(StorageReference storageRef ) {
-//        // 파일명 : 현재 시간 + 회원전화번호
-//        SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
-//        Date time = new Date();
-//        String time1 = format1.format(time);
-//        videoref =storageRef.child("/videos/" + time1 + _phone);
-
         // 파일명 : 회원전화번호
-        videoref =storageRef.child("/videos/" + _phone);
+        videoref =storageRef.child("/Register/" + _phone);
     }
 
     private void startVideo() {
@@ -88,12 +82,9 @@ public class VideoActivity extends AppCompatActivity {
         super.onActivityResult (requestCode, resultCode, data);
 
         videouri = data.getData ();
-//        Log.e(TAG,"videoUri:"+videouri);
         filename = videouri.getLastPathSegment();
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-//                Toast.makeText (this, "Video saved to:\n" +
-//                        videouri, Toast.LENGTH_LONG).show ();
                 // upload 메소드. 저장 -> 업로드
                 if (videouri != null) {
 
@@ -117,7 +108,6 @@ public class VideoActivity extends AppCompatActivity {
 
                                     //데이터베이스에 저장된 동영상 url추가
                                     final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-//                                    Log.e(TAG, "url : "+_url);
                                     final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
                                     final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
                                     query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -131,7 +121,7 @@ public class VideoActivity extends AppCompatActivity {
                                                     Log.d(TAG, "postkey: "+postkey);
                                                     //url update
                                                     String url = _url;
-                                                    leadersRef.child(postkey).child("url").setValue(url);
+                                                    leadersRef.child(postkey).child("registerUrl").setValue(url);
                                                 }
                                             }
                                         }
@@ -165,11 +155,6 @@ public class VideoActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show ();
             }
         }
-    }
-
-    //리스너에서 토스트가 안되가지고 함수로 만들어줌
-    private void startToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void startMypagectivity(String phone) {

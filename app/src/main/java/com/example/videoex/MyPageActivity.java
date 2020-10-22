@@ -2,6 +2,7 @@ package com.example.videoex;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -69,5 +70,17 @@ public class MyPageActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.mypage_name)).setText(myName);
         ((TextView) findViewById(R.id.mypage_phone)).setText(myPhoneNum);
         ((TextView) findViewById(R.id.mypage_approval)).setText(myapproval);
+
+        Handler timer = new Handler();
+
+        timer.postDelayed(new Runnable(){ //3초후 쓰레드를 생성하는 postDelayed 메소드
+            public void run(){
+                finish();
+                Intent intent = new Intent(MyPageActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent); //다음 액티비티 이동
+            }
+        }, 3000);
+
     }
 }
