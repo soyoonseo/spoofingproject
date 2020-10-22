@@ -107,7 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                    Toast.makeText(LoginActivity.this, "촬이 완료되었습니다.",
+                                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                                    mDatabase.child("UserList").child(_phone).child("state").setValue("Login");
+                                    Toast.makeText(LoginActivity.this, "촬영이 완료되었습니다.",
                                             Toast.LENGTH_LONG).show();
 
                                     //데이터베이스에 저장된 동영상 url추가
