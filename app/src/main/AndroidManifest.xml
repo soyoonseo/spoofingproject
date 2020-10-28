@@ -7,6 +7,10 @@
 
     <uses-feature android:name="android.hardware.camera" />
 
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,12 +35,16 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".NoticeActivity" />
-        <activity android:name=".SignUpActivity2" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".VideoActivity" />
         <activity android:name=".MyPageActivity" />
-        <activity android:name=".TermsActivity1" />
-        <activity android:name=".TermsActivity2" />
+        <activity
+            android:name=".TermsActivity1"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
+        <activity
+            android:name=".TermsActivity2"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
+        <activity android:name=".ServerConnect" />
         <activity
             android:name=".faceDetect.FaceDetection"
             android:screenOrientation="portrait" />

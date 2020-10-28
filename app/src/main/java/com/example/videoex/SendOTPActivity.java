@@ -1,8 +1,5 @@
 package com.example.videoex;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +7,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -33,7 +33,7 @@ public class SendOTPActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(inputMobile.getText().toString().trim().isEmpty()){
-                    Toast.makeText(SendOTPActivity.this, "휴대폰 번호를 입력하세요", Toast.LENGTH_SHORT).show();;
+                    Toast.makeText(SendOTPActivity.this, "휴대폰 번호를 입력하세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 progressBar.setVisibility(View.VISIBLE);
@@ -68,6 +68,7 @@ public class SendOTPActivity extends AppCompatActivity {
                                 intent.putExtra("mobile", inputMobile.getText().toString());
                                 intent.putExtra("verificationId", verificationId);
                                 startActivity(intent);
+                                finish();
                             }
                         }
                 );

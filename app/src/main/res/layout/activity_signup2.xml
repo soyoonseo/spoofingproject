@@ -48,14 +48,112 @@
                 android:ems="10"
                 android:hint="이메일" />
 
-            <EditText
-                android:id="@+id/phoneEditText"
+            <LinearLayout
+                android:weightSum="10"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="+82-"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/inputMobile"
+                    android:layout_width="0dp"
+                    android:layout_weight="7"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@null"
+                    android:hint="01012345678"
+                    android:imeOptions="actionDone"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/buttonGetOTP"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+
+                    android:layout_weight="2"
+                    android:background="@drawable/background_button"
+                    android:text="본인인증"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:weightSum="10"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/inputOTP"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="9"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:hint="인증번호 6자리를 입력해주세요."
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:ignore="LabelFor" />
+
+                <Button
+                    android:id="@+id/buttonVerify"
+                    android:layout_width="42dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_button"
+                    android:text="인증확인"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:ems="10"
-                android:hint="휴대폰"/>
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="인증번호를 받지 못 하셨나요?"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/TextResendOTP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="다시받기"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -70,7 +168,7 @@
                 android:padding="3dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/check1"
+                    android:id="@+id/join_layout_5_check_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -86,6 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="약관보기"
                     android:textSize="16sp" />
@@ -99,7 +198,7 @@
                 android:padding="3dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/check2"
+                    android:id="@+id/join_layout_5_check_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -141,7 +240,7 @@
                 android:padding="3dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/check3"
+                    android:id="@+id/join_layout_5_check_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -181,6 +280,7 @@
                 android:visibility="gone"/>
 
         </FrameLayout>
+
 
     </LinearLayout>
 </RelativeLayout>

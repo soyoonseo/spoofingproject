@@ -1,15 +1,20 @@
 package com.example.videoex;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,7 +37,10 @@ public class VideoActivity extends AppCompatActivity {
     private String filename;
     private String _phone;
     private DatabaseReference mDatabase; // 네트워크 연결
-
+    private String temp;
+    public static final String CAMERA_FRONT = "1";
+    public static final String CAMERA_BACK = "0";
+    private String cameraId = CAMERA_BACK;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,16 +58,71 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     private void create_Video_Name(StorageReference storageRef ) {
+//        // 파일명 : 현재 시간 + 회원전화번호
+//        SimpleDateFormat format1 = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+//        Date time = new Date();
+//        String time1 = format1.format(time);
+//        videoref =storageRef.child("/videos/" + time1 + _phone);
+
         // 파일명 : 회원전화번호
         videoref =storageRef.child("/Register/" + _phone);
     }
 
-    private void startVideo() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
-        intent.putExtra("android.intent.extra.durationLimit",5);
-        startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+    public void checkSelfPermission() {
+        temp = "";
+        //파일 읽기 권한 확인
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            temp += Manifest.permission.CAMERA+ " ";
+        }
+
+
+        if (TextUtils.isEmpty(temp) == false) {
+            //권한 요청
+            ActivityCompat.requestPermissions(this, temp.trim().split(" "),1); }
+        else {
+            //모두 허용 상태
+            Toast.makeText(this, "권한을 모두 허용", Toast.LENGTH_SHORT).show(); }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //권한을 허용 했을 경우
+        if(requestCode == 1){
+            int length = permissions.length;
+            for (int i = 0; i < length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    // 동의
+                    Log.d("MainActivity","권한 허용 : " + permissions[i]);
+                }
+            }
+            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
+            intent.putExtra("android.intent.extra.durationLimit",5);
+            try {
+                startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+
+            }catch (Exception e){
+                Log.e(TAG,e.getMessage());
+            }
+        }
+    }
+
+    private void startVideo() {
+        checkSelfPermission();
+        if (TextUtils.isEmpty(temp) == true) {
+            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
+            intent.putExtra("android.intent.extra.durationLimit", 5);
+            try {
+                startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
 
     public void updateProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
@@ -82,9 +145,12 @@ public class VideoActivity extends AppCompatActivity {
         super.onActivityResult (requestCode, resultCode, data);
 
         videouri = data.getData ();
+        Log.e(TAG,"videoUri:"+videouri);
         filename = videouri.getLastPathSegment();
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+//                Toast.makeText (this, "Video saved to:\n" +
+//                        videouri, Toast.LENGTH_LONG).show ();
                 // upload 메소드. 저장 -> 업로드
                 if (videouri != null) {
 
@@ -108,8 +174,9 @@ public class VideoActivity extends AppCompatActivity {
 
                                     //데이터베이스에 저장된 동영상 url추가
                                     final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                                    final DatabaseReference leadersRef = FirebaseDatabase.getInstance().getReference("UserList");
-                                    final Query query = leadersRef.orderByChild("phone").equalTo(_phone);
+//                                    Log.e(TAG, "url : "+_url);
+                                    final DatabaseReference UsersRef = FirebaseDatabase.getInstance().getReference("UserList");
+                                    final Query query = UsersRef.orderByChild("phone").equalTo(_phone);
                                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot snapshot) {
@@ -121,7 +188,7 @@ public class VideoActivity extends AppCompatActivity {
                                                     Log.d(TAG, "postkey: "+postkey);
                                                     //url update
                                                     String url = _url;
-                                                    leadersRef.child(postkey).child("registerUrl").setValue(url);
+                                                    UsersRef.child(postkey).child("url").setValue(url);
                                                 }
                                             }
                                         }
@@ -155,6 +222,11 @@ public class VideoActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show ();
             }
         }
+    }
+
+    //리스너에서 토스트가 안되가지고 함수로 만들어줌
+    private void startToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void startMypagectivity(String phone) {

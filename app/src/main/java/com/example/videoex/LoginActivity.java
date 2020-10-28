@@ -3,19 +3,24 @@ package com.example.videoex;
 OTP -> 로그인하기 위한 얼굴 영상 촬영
  */
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,22 +40,23 @@ public class LoginActivity extends AppCompatActivity {
     private String filename;
     private String _phone;
     private DatabaseReference mDatabase; // 네트워크 연결
-    private FirebaseAuth mAuth;
 
+
+
+
+    static final int REQUEST_VIDEO_CAPTURE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        //초기화
-        mAuth = FirebaseAuth.getInstance();
-
+        Intent intent = getIntent();
+        _phone = intent.getStringExtra("phone");
+        Log.e("TAG","Phone : "+_phone);
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
-        Intent otp_intent = getIntent();
-        _phone = otp_intent.getStringExtra("phoneNumber");
         //비디오 화면 띄워주기
         startVideo();
+        //dispatchTakeVideoIntent();
         //이름 네이밍
         create_Video_Name(storageRef);
     }
@@ -60,11 +66,62 @@ public class LoginActivity extends AppCompatActivity {
         videoref =storageRef.child("/Login/" + _phone);
     }
 
-    private void startVideo() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra("android.intent.extra.durationLimit",3);
-        startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+    public void checkSelfPermission() {
+        String temp = "";
+        //파일 읽기 권한 확인
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            temp += Manifest.permission.CAMERA+ " ";
+        }
+
+
+        if (TextUtils.isEmpty(temp) == false) {
+            //권한 요청
+            ActivityCompat.requestPermissions(this, temp.trim().split(" "),1); }
+        else {
+            //모두 허용 상태
+            Toast.makeText(this, "권한을 모두 허용", Toast.LENGTH_SHORT).show(); }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //권한을 허용 했을 경우
+        if(requestCode == 1){
+            int length = permissions.length;
+            for (int i = 0; i < length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    // 동의
+                    Log.d("MainActivity","권한 허용 : " + permissions[i]);
+                }
+            }
+            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
+            intent.putExtra("android.intent.extra.durationLimit",5);
+            try {
+                startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+
+            }catch (Exception e){
+                Log.e(TAG,e.getMessage());
+            }
+        }
+    }
+
+    private void startVideo() {
+        checkSelfPermission();
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        // 테스트를 위해 5초로 설정 -> 테스트 끝나면 20초로 변경
+        intent.putExtra("android.intent.extra.durationLimit",3);
+        try {
+            startActivityForResult(intent, REQUEST_CODE); //startActivityForResult 새로운 액티비티 호출
+
+        }catch (Exception e){
+            Log.e(TAG,e.getMessage());
+        }
+    }
+
+
+
+
 
     public void updateProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
@@ -106,11 +163,11 @@ public class LoginActivity extends AppCompatActivity {
                             new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                                     mDatabase = FirebaseDatabase.getInstance().getReference();
                                     mDatabase.child("UserList").child(_phone).child("state").setValue("Login");
                                     Toast.makeText(LoginActivity.this, "촬영이 완료되었습니다.",
                                             Toast.LENGTH_LONG).show();
+
 
                                     //데이터베이스에 저장된 동영상 url추가
                                     final String _url = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
@@ -129,11 +186,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
                                             }
                                         }
+                                        //이런...
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                         }
                                     });
+
                                     startMainpagectivity(_phone); // Main로 이동
                                 }
                             }).addOnProgressListener (new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -161,7 +220,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startMainpagectivity(String phone) {
         //인텐트 객체 생성
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ServerConnect.class);
+        intent.putExtra("phone",phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
         startActivity(intent);
+        finish();
     }
 }

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="@string/otp_verification"
+            android:text="인증확인"
             android:textColor="@color/colorTextPrimary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -36,7 +36,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="50dp"
             android:gravity="center"
-            android:text="@string/enter_the_otp_sent_to"
+            android:text="인증번호를 입력해주세요."
             android:textColor="@color/colorTextSecondary"
             android:textSize="14sp"/>
 
@@ -160,17 +160,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/didn_t_receive_the_otp"
+                android:text="인증번호를 받지 못 하셨나요?"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/TextResendOTP"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:text="@string/resend_otp"
-                android:textColor="@color/colorAccent"
+                android:text="다시받기"
+                android:textColor="@color/red"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -186,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
                 android:background="@drawable/background_button"
-                android:text="@string/verify"
+                android:text="인증확인"
                 android:textColor="@color/colorWhite"
                 android:textSize="16sp"
                 android:textStyle="bold" />

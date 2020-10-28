@@ -24,29 +24,28 @@
             android:orientation="vertical"
             android:padding="10dp">
 
+
             <Button
                 android:id="@+id/gotoLoginButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="로그인" />
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/backgorund_button_gray"
+                android:text="로그인"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/gotoSignUpButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="회원가입" />
+                android:background="@drawable/backgorund_button_gray"
+                android:text="회원가입"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/gotoOTPButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="OTP테스트" />
-
-            <Button
-                android:id="@+id/gotoVideoButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="비디오테스트" />
 
         </LinearLayout>
 

@@ -1,8 +1,5 @@
 package com.example.videoex;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -26,10 +26,10 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import java.util.concurrent.TimeUnit;
 
 public class VerifyOTPActivity extends AppCompatActivity {
-    private static final String TAG = "TAG";
+
     private EditText inputCode1, inputCode2, inputCode3, inputCode4, inputCode5, inputCode6;
     private String verificationId;
-
+    private String phone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +37,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
         TextView textMobile = findViewById(R.id.textMobile);
         textMobile.setText(String.format(
+
                 "+82-%s", getIntent().getStringExtra("mobile")
         ));
-
+        phone = getIntent().getStringExtra("mobile");
+        phone =  "+82"+phone.substring(1,11);
         inputCode1 = findViewById(R.id.inputCode1);
         inputCode2 = findViewById(R.id.inputCode2);
         inputCode3 = findViewById(R.id.inputCode3);
@@ -58,11 +60,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(inputCode1.getText().toString().trim().isEmpty()
-                || inputCode2.getText().toString().trim().isEmpty()
-                || inputCode3.getText().toString().trim().isEmpty()
-                || inputCode4.getText().toString().trim().isEmpty()
-                || inputCode5.getText().toString().trim().isEmpty()
-                || inputCode6.getText().toString().trim().isEmpty()) {
+                        || inputCode2.getText().toString().trim().isEmpty()
+                        || inputCode3.getText().toString().trim().isEmpty()
+                        || inputCode4.getText().toString().trim().isEmpty()
+                        || inputCode5.getText().toString().trim().isEmpty()
+                        || inputCode6.getText().toString().trim().isEmpty()) {
 
                     Toast.makeText(VerifyOTPActivity.this, "인증번호를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     return;
@@ -90,13 +92,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     progressBar.setVisibility(View.GONE);
                                     buttonVerify.setVisibility(View.VISIBLE);
                                     if(task.isSuccessful()){
-                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                        String phoneNumber = getIntent().getStringExtra("mobile");
-                                        phoneNumber = "+82"+phoneNumber.substring(1);
-                                        intent.putExtra("phoneNumber",phoneNumber);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-
+                                        startLoginActivity();
+//
+//                                        Intent intent = new Intent(getApplicationContext(), MyPageActivity.class);
+//                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                        startActivity(intent);
                                     }
                                     else{
                                         Toast.makeText(VerifyOTPActivity.this, "인증번호가 일치하지 않습니다.",Toast.LENGTH_SHORT).show();
@@ -134,6 +134,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
                             public void onCodeSent(@NonNull String newVerificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                                 verificationId = newVerificationId;
                                 Toast.makeText(VerifyOTPActivity.this, "OTP sent", Toast.LENGTH_SHORT).show();
+
+
                             }
                         }
                 );
@@ -216,5 +218,14 @@ public class VerifyOTPActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
+    }
+    private void startLoginActivity() {
+        //인텐트 객체 생성
+        Intent intent = new Intent(this, LoginActivity.class);
+        Log.e("TAG","_phone:"+phone);
+        System.out.print("_phone :"+phone);
+        intent.putExtra("phone",phone); //휴대폰 번호 넘길 것 "매개변수명", 데이터
+        startActivity(intent);
+        finish();
     }
 }
