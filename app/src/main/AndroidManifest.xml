@@ -14,8 +14,8 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="BTS"
+        android:roundIcon="@mipmap/ic_launcher_foreground"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -45,9 +45,6 @@
             android:name=".TermsActivity2"
             android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" />
         <activity android:name=".ServerConnect" />
-        <activity
-            android:name=".faceDetect.FaceDetection"
-            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
